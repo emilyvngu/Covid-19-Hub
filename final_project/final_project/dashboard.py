@@ -103,8 +103,6 @@ def create_line_chart():
 def get_theme():
     """
     Determines the current theme of the application (light or dark).
-    Parameters:
-        None
     Returns:
         str: 'dark' if dark mode is active, otherwise 'default'.
     """
@@ -131,7 +129,6 @@ chart_settings_card = pn.Card(
 # Layout
 layout = pn.template.FastListTemplate(
     title="COVID Insight Dashboard",
-    theme_toggle=True,
     sidebar=[
         """global_stats(),
         search_card,
@@ -162,7 +159,12 @@ layout = pn.template.FastListTemplate(
             ))
         )
     ],
-    header_background='#343a40'
+    header_background='#343a40',
+    background_color='#ffffff' if get_theme() == 'default' else '#181818',
+    theme_toggle=True
 ).servable()
 
-layout.show()
+
+if __name__ == '__main__':
+    pn.serve(layout)
+#layout.show()
