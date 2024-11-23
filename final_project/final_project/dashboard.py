@@ -20,12 +20,15 @@ country_total_case_data = {'US':{'total_cases':900, 'total_deaths':100, 'total_r
             'Italy':{'total_cases':700, 'total_deaths':100, 'total_recovered':200, 'total_active':200}}
 df = pd.DataFrame(country_total_case_data)
 
+world_map_data = {'US':{'long':900, 'lat':100, 'rate':200, 'total_active':200},
+            'India':{'total_cases':800, 'total_deaths':100, 'total_recovered':200, 'total_active':200},
+            'Italy':{'total_cases':700, 'total_deaths':100, 'total_recovered':200, 'total_active':200}}
+
 # Widgets
 
 country_selector = pn.widgets.Select(name='Select Country', options=df.columns.tolist(), width=280)
 chart_width = pn.widgets.IntSlider(name='Chart Width', start=400, end=1200, step=100, value=600)
 chart_height = pn.widgets.IntSlider(name='Chart Height', start=300, end=800, step=100, value=400)
-
 
 # Callback Functions
 def global_stats():
@@ -40,7 +43,6 @@ def global_stats():
         width=300
     )
     return stats_card
-
 
 @pn.depends(country=country_selector.param.value)
 def country_stats(country):
@@ -100,16 +102,24 @@ def create_line_chart():
                   title='COVID-19 Trends Over Time')
     return pn.pane.Plotly(fig)
 
-def get_theme():
-    """
-    Determines the current theme of the application (light or dark).
-    Returns:
-        str: 'dark' if dark mode is active, otherwise 'default'.
-    """
-    args = pn.state.session_args
-    if "theme" in args and args["theme"][0] == b"dark":
-        return "dark"
-    return "default"
+def world_map():
+    world = pd.DataFrame()
+    world['lat'] = [37.0902, 20.5937, -14.2350, 61.5240, 46.6034, 36.2048]
+    world['lon'] = [-95.7129, 78.9629, -51.9253, 105.3188, 2.2137, 138.2529]
+    world['rates'] = [0.5, 0.9, 1, 0.2, 0.3, 1]
+
+    points = gv.Points(df, ['lon', 'lat'], ['rates'])
+    map_plot = points.opts(
+       opts.Points(
+           size=10,
+           tools=['hover'],
+           color='Cases',
+           cmap='Blues',
+           width=chart_width.value,
+           height=chart_height.value
+       )
+    )
+    return map_plot
 
 # Sidebar Cards
 search_card = pn.Card(
@@ -129,11 +139,8 @@ chart_settings_card = pn.Card(
 # Layout
 layout = pn.template.FastListTemplate(
     title="COVID Insight Dashboard",
+    theme_toggle=True,  # Enable toggle for switching themes
     sidebar=[
-        """global_stats(),
-        search_card,
-        pn.Spacer(height=50),
-        country_stats"""
         #chart_settings_card
     ],
     main=[
@@ -154,17 +161,13 @@ layout = pn.template.FastListTemplate(
                     create_line_chart()
                 ),
                 pn.Row(
-                    'kk'
+                    world_map
                 )
             ))
         )
     ],
     header_background='#343a40',
-    background_color='#ffffff' if get_theme() == 'default' else '#181818',
-    theme_toggle=True
+
 ).servable()
 
-
-if __name__ == '__main__':
-    pn.serve(layout)
-#layout.show()
+layout.show()
