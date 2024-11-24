@@ -1,3 +1,5 @@
+from statistics import correlation
+
 import pandas as pd
 import numpy as np
 import panel as pn
@@ -230,7 +232,7 @@ heatmap_card = pn.Card(
 
 # Layout
 layout = pn.template.FastListTemplate(
-    title="COVID Insight Dashboard",
+    title="COVID Insight Hub",
     theme_toggle=True,  # Enable toggle for switching themes
     sidebar=[
         other_global_stats(),  # Global stats card
@@ -243,7 +245,7 @@ layout = pn.template.FastListTemplate(
             ("Global vs. Country Comparison", pn.Column(
                 pn.Row(
                     create_global_pie_chart,  # Global pie chart
-                    heatmap_card
+                    correlation_heatmap(country_data)
                 ),
                 pn.Row(
                     create_country_pie_chart,  # Country-specific pie chart
