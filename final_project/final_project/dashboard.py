@@ -98,7 +98,6 @@ def create_global_pie_chart():
     fig.update_layout(
         width=300,  # Adjust width
         height=300,  # Adjust height
-        margin=dict(t=30, b=0, l=30, r=10),  # Reduce top, bottom, left, right margins
         title_font_size=12  # Optional: reduce font size
     )
     return pn.pane.Plotly(fig)
@@ -122,7 +121,6 @@ def create_country_pie_chart(country):
     fig.update_layout(
         width=300,  # Adjust width
         height=300,  # Adjust height
-        margin=dict(t=20, b=20, l=20, r=20),  # Reduce top, bottom, left, right margins
         title_font_size=12  # Optional: reduce font size
     )
     return pn.pane.Plotly(fig)
@@ -245,29 +243,29 @@ layout = pn.template.FastListTemplate(
     title="COVID Insight Dashboard",
     theme_toggle=True,  # Enable toggle for switching themes
     sidebar=[
+        global_stats(),  # Global stats card
         pn.Card(country_selector, title="Country Selector", width=300),
+        country_stats  # Country stats card
         #chart_settings_card
     ],
     main=[
         pn.Tabs(
             ("Global vs. Country Comparison", pn.Column(
                 pn.Row(
-                    global_stats(),  # Global stats card
-                    country_stats  # Country stats card
+                    create_global_pie_chart,  # Global pie chart
+                    create_line_chart()
                 ),
                 pn.Row(
-                    create_global_pie_chart,  # Global pie chart
-                    create_country_pie_chart  # Country-specific pie chart
+                    create_country_pie_chart,  # Country-specific pie chart
+                    create_heatmap(heat_df, title="Dashboard Correlation Heatmap")
                 )
             )),
             ("Graphs", pn.Column(
                 pn.Row(
-                    create_line_chart()
                 ),
                 pn.Row(
                     #world_map(world_map_data),  # Pass JSON data to the world_map function
-                    static_map_card,
-                    create_heatmap(heat_df, title="Dashboard Correlation Heatmap")
+                    static_map_card
                 )
             ))
         )
