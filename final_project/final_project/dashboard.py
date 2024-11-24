@@ -80,18 +80,17 @@ def other_global_stats():
 @pn.depends(country=country_selector.param.value)
 def country_stats(country):
     if not country:
-        return "Select a country to view its statistics."
+        return pn.pane.Markdown("### Select a country to view its statistics.", width=300)
+
     country_data = df[country]
-    return pn.Card(
-        pn.Column(
-            f"**Cases:** {country_data['total_cases']:,}",
-            f"**Deaths:** {country_data['total_deaths']:,}",
-            f"**Recovered:** {country_data['total_recovered']:,}",
-            f"**Active:** {country_data['total_active']:,}"
-        ),
-        title=f"{country} Statistics",
-        width=300
-    )
+    stats_md = f"""
+    ### {country} Statistics
+    - **Cases:** {country_data['total_cases']:,}
+    - **Deaths:** {country_data['total_deaths']:,}
+    - **Recovered:** {country_data['total_recovered']:,}
+    - **Active:** {country_data['total_active']:,}
+    """
+    return pn.pane.Markdown(stats_md, width=300, style={"padding": "10px", "font-size": "14px"})
 
 def create_global_pie_chart():
     global_df = pd.DataFrame({
@@ -144,7 +143,8 @@ def create_line_chart():
     df_trends = pd.DataFrame({'Date': time, 'Cases': cases, 'Deaths': deaths, 'Recovered': recovered})
     fig = px.line(df_trends, x='Date', y=['Cases', 'Deaths', 'Recovered'],
                   labels={'value': 'Count', 'variable': 'Metric'},
-                  title='COVID-19 Trends Over Time')
+                  title='COVID-19 Trends Over Time',
+                  height=400)
     return pn.pane.Plotly(fig)
 
 
