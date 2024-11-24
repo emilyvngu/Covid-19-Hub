@@ -4,11 +4,15 @@ import panel as pn
 import plotly.express as px
 import holoviews as hv
 import geoviews as gv
+import geoviews.tile_sources as gvts
+from geoviews import opts
 from holoviews import opts
+
 
 # Initialize panel and extensions
 hv.extension('bokeh')
 pn.extension()
+gv.extension('bokeh')
 
 # global data
 global_data = {'total_cases':500, 'total_deaths':100, 'total_recovered':200, 'total_active':200}
@@ -20,9 +24,14 @@ country_total_case_data = {'US':{'total_cases':900, 'total_deaths':100, 'total_r
             'Italy':{'total_cases':700, 'total_deaths':100, 'total_recovered':200, 'total_active':200}}
 df = pd.DataFrame(country_total_case_data)
 
-world_map_data = {'US':{'long':900, 'lat':100, 'rate':200, 'total_active':200},
-            'India':{'total_cases':800, 'total_deaths':100, 'total_recovered':200, 'total_active':200},
-            'Italy':{'total_cases':700, 'total_deaths':100, 'total_recovered':200, 'total_active':200}}
+world_map_data = [
+    {'country': 'USA', 'lon': -95.7129, 'lat': 37.0902, 'case_death_ratio': 0.05},
+    {'country': 'India', 'lon': 78.9629, 'lat': 20.5937, 'case_death_ratio': 0.03},
+    {'country': 'Brazil', 'lon': -51.9253, 'lat': -14.2350, 'case_death_ratio': 0.06},
+    {'country': 'Russia', 'lon': 105.3188, 'lat': 61.5240, 'case_death_ratio': 0.02},
+    {'country': 'France', 'lon': 2.2137, 'lat': 46.6034, 'case_death_ratio': 0.04},
+    {'country': 'Australia', 'lon': 133.7751, 'lat': -25.2744, 'case_death_ratio': 0.01}
+]
 
 # Widgets
 
@@ -102,24 +111,22 @@ def create_line_chart():
                   title='COVID-19 Trends Over Time')
     return pn.pane.Plotly(fig)
 
-def world_map():
-    world = pd.DataFrame()
-    world['lat'] = [37.0902, 20.5937, -14.2350, 61.5240, 46.6034, 36.2048]
-    world['lon'] = [-95.7129, 78.9629, -51.9253, 105.3188, 2.2137, 138.2529]
-    world['rates'] = [0.5, 0.9, 1, 0.2, 0.3, 1]
 
-    points = gv.Points(df, ['lon', 'lat'], ['rates'])
+def world_map(data_json):
+    data = pd.DataFrame(data_json)
+    points = gv.Points(data, ['lon', 'lat'], ['case_death_ratio', 'country'])
     map_plot = points.opts(
-       opts.Points(
-           size=10,
-           tools=['hover'],
-           color='Cases',
-           cmap='Blues',
-           width=chart_width.value,
-           height=chart_height.value
-       )
+        opts.Points(
+            size=15,
+            tools=['hover'],
+            color='case_death_ratio',
+            cmap='YlOrBr',
+            width=800,
+            height=500
+        )
     )
-    return map_plot
+    basemap = gvts.OSM
+    return basemap * map_plot
 
 # Sidebar Cards
 search_card = pn.Card(
@@ -161,7 +168,7 @@ layout = pn.template.FastListTemplate(
                     create_line_chart()
                 ),
                 pn.Row(
-                    world_map
+                    world_map(world_map_data)  # Pass JSON data to the world_map function
                 )
             ))
         )
