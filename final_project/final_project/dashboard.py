@@ -7,15 +7,12 @@ import geoviews as gv
 import geoviews.tile_sources as gvts
 from geoviews import opts
 from holoviews import opts
-
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
 import requests
 import json
-
-
 
 # Initialize panel and extensions
 hv.extension('bokeh')
@@ -97,7 +94,14 @@ def create_global_pie_chart():
         values='Count',
         title='Global COVID-19 Statistics'
     )
-    return pn.pane.Plotly(fig, width=400, height=400)
+    # Update layout to make the chart smaller
+    fig.update_layout(
+        width=300,  # Adjust width
+        height=300,  # Adjust height
+        margin=dict(t=30, b=0, l=30, r=10),  # Reduce top, bottom, left, right margins
+        title_font_size=12  # Optional: reduce font size
+    )
+    return pn.pane.Plotly(fig)
 
 @pn.depends(country=country_selector.param.value)
 def create_country_pie_chart(country):
@@ -114,7 +118,14 @@ def create_country_pie_chart(country):
         values='Count',
         title=f"{country} COVID-19 Statistics"
     )
-    return pn.pane.Plotly(fig, width=400, height=400)
+    # Update layout to make the chart smaller
+    fig.update_layout(
+        width=300,  # Adjust width
+        height=300,  # Adjust height
+        margin=dict(t=20, b=20, l=20, r=20),  # Reduce top, bottom, left, right margins
+        title_font_size=12  # Optional: reduce font size
+    )
+    return pn.pane.Plotly(fig)
 
 def create_line_chart():
     time = pd.date_range(start='2020-01-01', periods=50, freq='M')
@@ -142,7 +153,7 @@ def world_map(data_json):
             height=500
         )
     )
-    # Use Esri Imagery as a reliable basemap
+    # Use CartoDark basemap
     basemap = gvts.CartoDark
     return basemap * map_plot
 
