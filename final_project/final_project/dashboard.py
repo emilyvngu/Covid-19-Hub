@@ -67,6 +67,16 @@ def global_stats():
     )
     return stats_card
 
+def other_global_stats():
+    stats_md = f"""
+    ### Global Statistics
+    - **Total Cases:** {global_data['total_cases']:,}
+    - **Total Deaths:** {global_data['total_deaths']:,}
+    - **Total Recovered:** {global_data['total_recovered']:,}
+    - **Total Active:** {global_data['total_active']:,}
+    """
+    return pn.pane.Markdown(stats_md, width=300, style={"padding": "10px", "font-size": "14px"})
+
 @pn.depends(country=country_selector.param.value)
 def country_stats(country):
     if not country:
@@ -173,7 +183,7 @@ def create_heatmap(data, title="Correlation Heatmap"):
         color_continuous_scale='thermal',
         title=title
     )
-    fig.update_layout(width=600, height=500)
+    fig.update_layout(width=500, height=300)
 
     # Convert the Plotly figure into a Panel object
     heatmap_pane = pn.pane.Plotly(fig)
@@ -243,7 +253,7 @@ layout = pn.template.FastListTemplate(
     title="COVID Insight Dashboard",
     theme_toggle=True,  # Enable toggle for switching themes
     sidebar=[
-        global_stats(),  # Global stats card
+        other_global_stats(),  # Global stats card
         pn.Card(country_selector, title="Country Selector", width=300),
         country_stats  # Country stats card
         #chart_settings_card
