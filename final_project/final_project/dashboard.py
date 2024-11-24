@@ -7,6 +7,7 @@ import geoviews as gv
 import geoviews.tile_sources as gvts
 from geoviews import opts
 from holoviews import opts
+import json
 
 
 # Initialize panel and extensions
