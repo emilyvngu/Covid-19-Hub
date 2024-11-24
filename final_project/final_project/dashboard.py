@@ -7,7 +7,14 @@ import geoviews as gv
 import geoviews.tile_sources as gvts
 from geoviews import opts
 from holoviews import opts
+
+import geopandas as gpd
+import matplotlib.pyplot as plt
+from io import BytesIO
+import base64
+import requests
 import json
+
 
 
 # Initialize panel and extensions
@@ -163,6 +170,44 @@ def create_heatmap(data, title="Correlation Heatmap"):
     heatmap_pane = pn.pane.Plotly(fig)
     return heatmap_pane
 
+def generate_static_map():
+    # Use a public GeoJSON source for world countries
+    geojson_url = "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson"
+    response = requests.get(geojson_url)
+    geojson_data = response.json()
+
+    # Convert GeoJSON to GeoDataFrame
+    world = gpd.GeoDataFrame.from_features(geojson_data["features"])
+
+    # Custom points
+    world_map_data = [
+        {'country': 'USA', 'lon': -95.7129, 'lat': 37.0902},
+        {'country': 'India', 'lon': 78.9629, 'lat': 20.5937},
+        {'country': 'Brazil', 'lon': -51.9253, 'lat': -14.2350},
+    ]
+    gdf = gpd.GeoDataFrame(world_map_data, geometry=gpd.points_from_xy(
+        [item['lon'] for item in world_map_data],
+        [item['lat'] for item in world_map_data]
+    ))
+
+    # Plot the map
+    fig, ax = plt.subplots(figsize=(10, 6))
+    world.plot(ax=ax, color='lightgrey', edgecolor='black')
+    gdf.plot(ax=ax, color='red', markersize=50)
+    plt.title("Static World Map with Points")
+    plt.tight_layout()
+
+    # Save the figure to a buffer
+    buf = BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    plt.close()
+
+    # Encode the image in base64
+    base64_img = base64.b64encode(buf.read()).decode('utf-8')
+    img_html = f"<img src='data:image/png;base64,{base64_img}'/>"
+    return pn.pane.HTML(img_html, width=800, height=500)
+
 # Sidebar Cards
 search_card = pn.Card(
     pn.Column(country_selector),
@@ -176,6 +221,12 @@ chart_settings_card = pn.Card(
     title="Chart Settings",
     width=320,
     collapsed=True
+)
+
+static_map_card = pn.Card(
+    generate_static_map(),
+    title="Static World Map",
+    width=900
 )
 
 # Layout
@@ -203,7 +254,8 @@ layout = pn.template.FastListTemplate(
                     create_line_chart()
                 ),
                 pn.Row(
-                    #world_map(world_map_data)  # Pass JSON data to the world_map function
+                    #world_map(world_map_data),  # Pass JSON data to the world_map function
+                    static_map_card,
                     create_heatmap(heat_df, title="Dashboard Correlation Heatmap")
                 )
             ))
