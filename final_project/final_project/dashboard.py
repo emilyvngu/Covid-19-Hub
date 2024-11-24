@@ -50,22 +50,8 @@ heat_df = pd.DataFrame(heat_map_data)
 # Widgets
 
 country_selector = pn.widgets.Select(name='Select Country', options=df.columns.tolist(), width=280)
-chart_width = pn.widgets.IntSlider(name='Chart Width', start=400, end=1200, step=100, value=600)
-chart_height = pn.widgets.IntSlider(name='Chart Height', start=300, end=800, step=100, value=400)
 
 # Callback Functions
-def global_stats():
-    stats_card = pn.Card(
-        pn.Column(
-            pn.pane.Markdown(f"**Total Cases:** {global_data['total_cases']:,}"),
-            pn.pane.Markdown(f"**Total Deaths:** {global_data['total_deaths']:,}"),
-            pn.pane.Markdown(f"**Total Recovered:** {global_data['total_recovered']:,}"),
-            pn.pane.Markdown(f"**Total Active:** {global_data['total_active']:,}")
-        ),
-        title="Global Statistics",
-        width=300
-    )
-    return stats_card
 
 def other_global_stats():
     stats_md = f"""
@@ -105,8 +91,9 @@ def create_global_pie_chart():
     )
     # Update layout to make the chart smaller
     fig.update_layout(
-        width=300,  # Adjust width
-        height=300,  # Adjust height
+        width=310,  # Adjust width
+        height=310,  # Adjust height
+        #margin=dict(l=10, r=10, t=40, b=10),
         title_font_size=12  # Optional: reduce font size
     )
     return pn.pane.Plotly(fig)
@@ -128,8 +115,9 @@ def create_country_pie_chart(country):
     )
     # Update layout to make the chart smaller
     fig.update_layout(
-        width=300,  # Adjust width
-        height=300,  # Adjust height
+        width=310,  # Adjust width
+        height=310,  # Adjust height
+        #margin=dict(l=10, r=10, t=40, b=10),
         title_font_size=12  # Optional: reduce font size
     )
     return pn.pane.Plotly(fig)
@@ -144,7 +132,7 @@ def create_line_chart():
     fig = px.line(df_trends, x='Date', y=['Cases', 'Deaths', 'Recovered'],
                   labels={'value': 'Count', 'variable': 'Metric'},
                   title='COVID-19 Trends Over Time',
-                  height=400)
+                  height=350)
     return pn.pane.Plotly(fig)
 
 
@@ -183,7 +171,7 @@ def create_heatmap(data, title="Correlation Heatmap"):
         color_continuous_scale='thermal',
         title=title
     )
-    fig.update_layout(width=500, height=300)
+    fig.update_layout(width=500, height=310)
 
     # Convert the Plotly figure into a Panel object
     heatmap_pane = pn.pane.Plotly(fig)
@@ -235,13 +223,6 @@ search_card = pn.Card(
     collapsed=False
 )
 
-chart_settings_card = pn.Card(
-    pn.Column(chart_width, chart_height),
-    title="Chart Settings",
-    width=320,
-    collapsed=True
-)
-
 static_map_card = pn.Card(
     generate_static_map(),
     title="Static World Map",
@@ -263,11 +244,11 @@ layout = pn.template.FastListTemplate(
             ("Global vs. Country Comparison", pn.Column(
                 pn.Row(
                     create_global_pie_chart,  # Global pie chart
-                    create_line_chart()
+                    create_heatmap(heat_df, title="Dashboard Correlation Heatmap")
                 ),
                 pn.Row(
                     create_country_pie_chart,  # Country-specific pie chart
-                    create_heatmap(heat_df, title="Dashboard Correlation Heatmap")
+                    create_line_chart(),
                 )
             )),
             ("Graphs", pn.Column(
