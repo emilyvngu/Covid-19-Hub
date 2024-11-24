@@ -11,7 +11,7 @@ from holoviews import opts
 
 # Initialize panel and extensions
 hv.extension('bokeh')
-pn.extension()
+pn.extension('plotly')
 gv.extension('bokeh')
 
 # global data
@@ -32,6 +32,15 @@ world_map_data = [
     {'country': 'France', 'lon': 2.2137, 'lat': 46.6034, 'case_death_ratio': 0.04},
     {'country': 'Australia', 'lon': 133.7751, 'lat': -25.2744, 'case_death_ratio': 0.01}
 ]
+
+heat_map_data = {
+    'Variable1': [1, 2, 3, 4, 5],
+    'Variable2': [2, 4, 6, 8, 10],
+    'Variable3': [5, 3, 1, 3, 5],
+    'Variable4': [8, 6, 4, 2, 0]
+}
+heat_df = pd.DataFrame(heat_map_data)
+
 
 # Widgets
 
@@ -125,8 +134,33 @@ def world_map(data_json):
             height=500
         )
     )
-    basemap = gvts.OSM
+    # Use Esri Imagery as a reliable basemap
+    basemap = gvts.CartoDark
     return basemap * map_plot
+
+
+def create_heatmap(data, title="Correlation Heatmap"):
+    """
+    Creates a correlation heatmap using Plotly.
+
+    Parameters:
+    - data: DataFrame, the dataset for which the correlation heatmap is generated.
+    """
+    # Compute correlation matrix
+    correlation_matrix = data.corr()
+
+    # Create a Plotly heatmap
+    fig = px.imshow(
+        correlation_matrix,
+        text_auto=True,
+        color_continuous_scale='thermal',
+        title=title
+    )
+    fig.update_layout(width=600, height=500)
+
+    # Convert the Plotly figure into a Panel object
+    heatmap_pane = pn.pane.Plotly(fig)
+    return heatmap_pane
 
 # Sidebar Cards
 search_card = pn.Card(
@@ -148,13 +182,13 @@ layout = pn.template.FastListTemplate(
     title="COVID Insight Dashboard",
     theme_toggle=True,  # Enable toggle for switching themes
     sidebar=[
+        pn.Card(country_selector, title="Country Selector", width=300),
         #chart_settings_card
     ],
     main=[
         pn.Tabs(
             ("Global vs. Country Comparison", pn.Column(
                 pn.Row(
-                    pn.Card(country_selector, title="Country Selector", width=300),
                     global_stats(),  # Global stats card
                     country_stats  # Country stats card
                 ),
@@ -168,13 +202,13 @@ layout = pn.template.FastListTemplate(
                     create_line_chart()
                 ),
                 pn.Row(
-                    world_map(world_map_data)  # Pass JSON data to the world_map function
+                    #world_map(world_map_data)  # Pass JSON data to the world_map function
+                    create_heatmap(heat_df, title="Dashboard Correlation Heatmap")
                 )
             ))
         )
     ],
     header_background='#343a40',
-
 ).servable()
 
 layout.show()
