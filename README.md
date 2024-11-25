@@ -23,6 +23,7 @@ The platform is designed to handle large datasets, and it is capable of running 
 
 The Entity Relationship Diagram (ERD) and schema design for storing COVID-19 data in Hive can be found in the /docs folder. The main tables include:
 
+<img width="1103" alt="ERD" src="https://github.com/user-attachments/assets/2ba43d0a-25f0-4201-857b-877cbe60400f">
 
 ### Preprocessing Steps
 1. Handling Missing Values:
