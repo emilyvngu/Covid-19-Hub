@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-
+from constants import HIVE_METASTORE_URI
 def create_session():
     spark = SparkSession.builder.appName('Athena').getOrCreate()
     return spark
@@ -12,7 +12,7 @@ def create_session_hive():
         SparkSession.builder
         .appName('Athena')
         .config('spark.sql.catalogImplementation', 'hive')
-        .config('spark.sql.hive.metastore.uris', 'thrift://localhost:9083')  # Metastore URI
+        .config('spark.sql.hive.metastore.uris', HIVE_METASTORE_URI)  # Metastore URI
         .config('spark.sql.warehouse.dir', '/user/hive/warehouse')  # HDFS or local path
         .enableHiveSupport()
         .getOrCreate()

@@ -1,12 +1,12 @@
 from pyspark.sql import SparkSession
-import session.session as session
+from session import create_session_hive
 from config.config import Config
 from pyspark.sql.functions import col, lit, to_date, monotonically_increasing_id
 from pyspark.sql.types import IntegerType, FloatType
 
 # Initialize SparkSession with Hive Support
-spark = session.create_session()
-
+spark = create_session_hive()
+spark.sql("show tables")
 # Load CSV Files into a DataFrame
 covid_raw_df = spark.read.csv(Config.HADOOP_FILE_PATH, header=True, inferSchema=True)
 
