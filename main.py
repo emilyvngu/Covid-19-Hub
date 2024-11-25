@@ -1,15 +1,17 @@
 from flask import Flask, jsonify
 from pyspark.sql import SparkSession
+from config import Config
 from pyspark.sql.functions import sum, avg
 from constants import *
-
+from datetime import datetime
+from news_api_response import *
 # Create a Spark session at the start of your application
 spark = SparkSession.builder.appName("CovidDataAnalysis").getOrCreate()
-df_pyspark = spark.read.csv('file:///Users/riddhiathreya/Desktop/DS5110/FinalProject/Athena/csse_covid_19_daily_reports/*.csv',inferSchema=True,header=True)
-
+# 172.17.0.2
+df_pyspark = spark.read.csv('hdfs://localhost:9000/user/riddhi/data/*.csv',inferSchema=True,header=True)
 app = Flask(__name__)
+app.config.from_object(Config)
 
-from datetime import datetime
 
 def is_valid_date_format(date_string):
     try:
@@ -19,6 +21,8 @@ def is_valid_date_format(date_string):
     except ValueError:
         return False
 
+def covid_news():
+    return news
 
 
 def total_cases():
@@ -147,5 +151,10 @@ def get_total_cases_over_time():
     result = total_cases_over_time()
     return jsonify(result)
 
+@app.route('/news', methods=['GET'])
+def get_news():
+    result = covid_news()
+    return jsonify(result)
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=9000)
+    app.run(host='0.0.0.0', port=9001)
