@@ -1,10 +1,10 @@
 from flask import Flask, jsonify
 from pyspark.sql import SparkSession
-from config import Config
+from config.config import Config
 from pyspark.sql.functions import sum, avg
-from constants import *
+from constants.constants import *
 from datetime import datetime
-from news_api_response import *
+from news.news_api_response import *
 # Create a Spark session at the start of your application
 spark = SparkSession.builder.appName("CovidDataAnalysis").getOrCreate()
 # 172.17.0.2

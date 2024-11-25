@@ -1,6 +1,6 @@
 from pyspark.sql import SparkSession
-import session
-from config import Config
+import session.session as session
+from config.config import Config
 from pyspark.sql.functions import col, lit, to_date, monotonically_increasing_id
 from pyspark.sql.types import IntegerType, FloatType
 
