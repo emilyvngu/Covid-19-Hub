@@ -18,6 +18,7 @@ The platform is designed to handle large datasets, and it is capable of running 
 1. **Apache Hadoop:** Set up and configure Hadoop (HDFS) for distributed storage.
 3. **Apache Hive:** Install Hive for SQL-like querying of structured data.
 
+Here is the guide to the installations - [Hadoop and hive](https://medium.com/@daibinraju/installing-hadoop-with-hive-on-mac-m1-using-homebrew-3505c6166e83)
 
 ### ERD and Schema Design
 
