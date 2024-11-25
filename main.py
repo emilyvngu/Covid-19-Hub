@@ -2,11 +2,11 @@
 from flask import Flask, jsonify
 from pyspark.sql import SparkSession
 from session import create_session_hive
-from config.config import Config
+from config import Config
 from pyspark.sql.functions import sum, avg
-from constants.constants import *
+from constants import *
 from datetime import datetime
-from news.news_api_response import *
+from news_api_response import *
 # Initialize SparkSession with Hive Support
 spark = create_session_hive()
 app = Flask(__name__)
