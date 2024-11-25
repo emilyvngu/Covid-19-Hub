@@ -38,11 +38,12 @@ The Entity Relationship Diagram (ERD) and schema design for storing COVID-19 dat
     Any missing latitude or longitude values are set to 0.0.
 5. Country Mapping with Broadcast Variables:
     A broadcast variable is used to map Country_Region to country_id. This improves efficiency when working with large datasets.
+### Data ingestion
 
+### data types
+1. Csv files
+2. json data
 
 ## Authors
+[@RiddhiAthreya](https://github.com/RiddhiAthreya)
 
-Contributors names and contact info
-
-ex. Dominique Pizzie  
-ex. [@DomPizzie](https://twitter.com/dompizzie)
