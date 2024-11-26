@@ -45,5 +45,5 @@ The Entity Relationship Diagram (ERD) and schema design for storing COVID-19 dat
 2. json data
 
 ## Authors
-[@RiddhiAthreya](https://github.com/RiddhiAthreya)
+[@RiddhiAthreya](https://github.com/RiddhiAthreya), [@emilyvngu](https://github.com/emilyvngu)
 
