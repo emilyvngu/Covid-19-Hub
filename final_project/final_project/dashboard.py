@@ -44,6 +44,7 @@ world_map_data = [
     {'country': 'France', 'lon': 2.2137, 'lat': 46.6034, 'case_death_ratio': 0.04},
     {'country': 'Australia', 'lon': 133.7751, 'lat': -25.2744, 'case_death_ratio': 0.01}
 ]
+world_map_df = pd.DataFrame(world_map_data)
 
 country_data = pd.DataFrame({
     "USA": [900, 100, 200, 200],
@@ -177,97 +178,28 @@ def correlation_heatmap(data):
 
     return pn.pane.Plotly(fig, config={"displayModeBar": False})
 
-def generate_static_map():
-    # Use a public GeoJSON source for world countries
-    geojson_url = "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson"
-    response = requests.get(geojson_url)
-    geojson_data = response.json()
-
-    # Convert GeoJSON to GeoDataFrame
-    world = gpd.GeoDataFrame.from_features(geojson_data["features"])
-
-    # Custom points
-    world_map_data = [
-        {'country': 'USA', 'lon': -95.7129, 'lat': 37.0902},
-        {'country': 'India', 'lon': 78.9629, 'lat': 20.5937},
-        {'country': 'Brazil', 'lon': -51.9253, 'lat': -14.2350},
-    ]
-    gdf = gpd.GeoDataFrame(world_map_data, geometry=gpd.points_from_xy(
-        [item['lon'] for item in world_map_data],
-        [item['lat'] for item in world_map_data]
-    ))
-
-    # Plot the map
-    fig, ax = plt.subplots(figsize=(10, 6))
-    world.plot(ax=ax, color='lightgrey', edgecolor='black')
-    gdf.plot(ax=ax, color='red', markersize=50)
-    plt.title("Static World Map with Points")
-    plt.tight_layout()
-
-    # Save the figure to a buffer
-    buf = BytesIO()
-    plt.savefig(buf, format="png")
-    buf.seek(0)
-    plt.close()
-
-    # Encode the image in base64
-    base64_img = base64.b64encode(buf.read()).decode('utf-8')
-    img_html = f"<img src='data:image/png;base64,{base64_img}'/>"
-    return pn.pane.HTML(img_html, width=800, height=500)
-
-def generate_interactive_map():
-    # Define the map center and zoom level
-    map_center = [0, 0]  # Center on the equator
-    world_map = Map(location=map_center, zoom_start=2, tiles='CartoDB positron')
-
-    # Custom points
-    world_map_data = [
-        {'country': 'USA', 'lon': -95.7129, 'lat': 37.0902},
-        {'country': 'India', 'lon': 78.9629, 'lat': 20.5937},
-        {'country': 'Brazil', 'lon': -51.9253, 'lat': -14.2350},
-    ]
-
-    # Add markers with a marker cluster for better scalability
-    marker_cluster = MarkerCluster().add_to(world_map)
-    for data in world_map_data:
-        Marker(location=[data['lat'], data['lon']],
-               popup=f"{data['country']}").add_to(marker_cluster)
-
-    # Convert the map to HTML
-    return pn.pane.HTML(world_map._repr_html_(), width=800, height=500)
-
-def generate_plotly_map():
-    # Custom points
-    world_map_data = [
-        {'country': 'USA', 'lon': -95.7129, 'lat': 37.0902},
-        {'country': 'India', 'lon': 78.9629, 'lat': 20.5937},
-        {'country': 'Brazil', 'lon': -51.9253, 'lat': -14.2350},
-    ]
-    df = pd.DataFrame(world_map_data)
-
-    # Create a scatter geo map
+def generate_case_fatality_map():
     fig = px.scatter_geo(
-        df,
+        world_map_df,
         lat="lat",
         lon="lon",
-        text="country",
-        title="Interactive World Map",
+        text="country",  # Display country name on hover
+        size="case_death_ratio",  # Size represents the case_death_ratio
+        color="case_death_ratio",  # Color intensity represents case_death_ratio
+        color_continuous_scale="Reds",  # Red for alarming ratios
+        title="World Map: Case Fatality Ratios",
+        projection="natural earth",
+        labels={"case_death_ratio": "Case Fatality Ratio"},
         template="plotly_white"
     )
+    fig.update_traces(marker=dict(sizemode='area', sizeref=0.01, line=dict(width=0.5, color="black")))
     fig.update_geos(
-        projection_type="natural earth",
-        showcoastlines=True,
-        coastlinecolor="black",
-        showland=True,
-        landcolor="lightgrey",
-        showocean=True,
-        oceancolor="lightblue"
+        showcountries=True, countrycolor="LightGrey",
+        showcoastlines=True, coastlinecolor="LightBlue",
+        showland=True, landcolor="LightGreen",
+        showocean=True, oceancolor="LightBlue"
     )
-    fig.update_traces(marker=dict(size=10, color="red", symbol="circle"))
-
-    # Return as a Panel Plotly pane
     return pn.pane.Plotly(fig, width=800, height=500)
-
 
 # Sidebar Cards
 search_card = pn.Card(
@@ -311,14 +243,11 @@ layout = pn.template.FastListTemplate(
                     create_line_chart(),
                 )
             )),
-            ("Map", pn.Column(
+            ("Case-Fatality Ratio Map", pn.Column(
                 pn.Row(
                 ),
                 pn.Row(
-                    #world_map(world_map_data),  # Pass JSON data to the world_map function
-                    static_map_card,
-                    generate_interactive_map(),
-                    generate_plotly_map()
+                    generate_case_fatality_map()
                 )
             ))
         )
