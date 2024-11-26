@@ -7,19 +7,7 @@ import plotly.express as px
 import holoviews as hv
 import geoviews as gv
 import geoviews.tile_sources as gvts
-from geoviews import opts
 from holoviews import opts
-import geopandas as gpd
-import matplotlib.pyplot as plt
-from io import BytesIO
-import base64
-import requests
-import json
-import param
-import folium
-from folium import Map, Marker
-from folium.plugins import MarkerCluster
-
 
 # Initialize panel and extensions
 hv.extension('bokeh')
@@ -45,6 +33,7 @@ world_map_data = [
     {'country': 'Australia', 'lon': 133.7751, 'lat': -25.2744, 'case_death_ratio': 0.01}
 ]
 world_map_df = pd.DataFrame(world_map_data)
+world_map_df_sorted = world_map_df.sort_values(by='case_death_ratio', ascending=False)
 
 country_data = pd.DataFrame({
     "USA": [900, 100, 200, 200],
@@ -53,10 +42,11 @@ country_data = pd.DataFrame({
     "Russia": [600, 90, 210, 190],
 }, index=["Total Cases", "Total Deaths", "Total Recovered", "Total Active"]).T
 
-
 # Widgets
 
 country_selector = pn.widgets.Select(name='Select Country', options=df.columns.tolist(), width=280)
+options = {row['country']: f"{row['case_death_ratio']:.2%}" for _, row in world_map_df_sorted.iterrows()}
+select_widget = pn.widgets.Select(name="Top Countries", options=options, sizing_mode="stretch_width")
 
 # Callback Functions
 
@@ -78,10 +68,10 @@ def country_stats(country):
     country_data = df[country]
     stats_md = f"""
     ### {country} Statistics
-    - **Cases:** {country_data['total_cases']:,}
-    - **Deaths:** {country_data['total_deaths']:,}
-    - **Recovered:** {country_data['total_recovered']:,}
-    - **Active:** {country_data['total_active']:,}
+    - **Total Cases:** {country_data['total_cases']:,}
+    - **Total Deaths:** {country_data['total_deaths']:,}
+    - **Total Recovered:** {country_data['total_recovered']:,}
+    - **Total Active:** {country_data['total_active']:,}
     """
     return pn.pane.Markdown(stats_md, width=300, style={"padding": "10px", "font-size": "14px"})
 
@@ -99,7 +89,7 @@ def create_global_pie_chart():
     # Update layout to make the chart smaller
     fig.update_layout(
         width=310,  # Adjust width
-        height=310,  # Adjust height
+        height=320,  # Adjust height
         #margin=dict(l=10, r=10, t=40, b=10),
         title_font_size=12  # Optional: reduce font size
     )
@@ -123,7 +113,7 @@ def create_country_pie_chart(country):
     # Update layout to make the chart smaller
     fig.update_layout(
         width=310,  # Adjust width
-        height=310,  # Adjust height
+        height=320,  # Adjust height
         #margin=dict(l=10, r=10, t=40, b=10),
         title_font_size=12  # Optional: reduce font size
     )
@@ -168,11 +158,11 @@ def correlation_heatmap(data):
         correlation_matrix,
         text_auto=".2f",
         color_continuous_scale="Viridis",
-        title="Interactive Correlation Heatmap: COVID-19 Statistics",
+        title="Correlation Heatmap: COVID-19 Statistics",
         labels={"color": "Correlation"}
     )
     fig.update_layout(
-        width=500, height=310,
+        width=500, height=320,
         margin=dict(l=40, r=40, t=40, b=40)
     )
 
@@ -183,7 +173,7 @@ def generate_case_fatality_map():
         world_map_df,
         lat="lat",
         lon="lon",
-        text="country",  # Display country name on hover
+        #text="country",  # Display country name on hover
         size="case_death_ratio",  # Size represents the case_death_ratio
         color="case_death_ratio",  # Color intensity represents case_death_ratio
         color_continuous_scale="Reds",  # Red for alarming ratios
@@ -200,6 +190,46 @@ def generate_case_fatality_map():
         showocean=True, oceancolor="LightBlue"
     )
     return pn.pane.Plotly(fig, width=800, height=500)
+
+
+def create_ranking_box(data, height=400, width=220):
+    """
+    Creates a scrollable ranking box for the given data.
+    """
+    # Create styled ranking cards
+    ranking_items = [
+        pn.pane.Markdown(
+            f"""
+            <div style="padding: 10px; text-align: center; border: 1px solid #ccc; 
+            background-color: #f0f0f0; border-radius: 5px;">
+                <b>{row['country']}</b><br>
+                Fatality Rate: {row['case_death_ratio']:.2%}
+            </div>
+            """,
+            width=200
+        )
+        for index, row in data.iterrows()
+    ]
+
+    # Create the scrollable ranking box
+    ranking_box = pn.Column(
+        *ranking_items,
+        scroll=True,  # Enable scrolling
+        height=height,  # Set height for the scrollable box
+        width=width,  # Width of the box
+        background="#58a3c6"  # Blue-green background matching your mockup
+    )
+
+    # Add a title to the ranking box
+    ranking_layout = pn.Column(
+        pn.pane.Markdown("<h3 style='text-align: center; color: white;'>Ranking</h3>", width=width),
+        ranking_box,
+        background="#58a3c6",  # Background for the entire ranking column
+        margin=0,
+        align="center"
+    )
+
+    return ranking_layout
 
 # Sidebar Cards
 search_card = pn.Card(
@@ -227,7 +257,7 @@ layout = pn.template.FastListTemplate(
     ],
     main=[
         pn.Tabs(
-            ("Global vs. Country Comparison", pn.Column(
+            ("COVID-19 Statistics Overview", pn.Column(
                 pn.Row(
                     create_global_pie_chart,  # Global pie chart
                     correlation_heatmap(country_data)
@@ -239,9 +269,8 @@ layout = pn.template.FastListTemplate(
             )),
             ("Case-Fatality Ratio Map", pn.Column(
                 pn.Row(
-                ),
-                pn.Row(
-                    generate_case_fatality_map()
+                    pn.Column(generate_case_fatality_map(), sizing_mode="stretch_width"),  # World map on the left
+                            create_ranking_box(world_map_df_sorted, height=441, width=210),
                 )
             ))
         )
