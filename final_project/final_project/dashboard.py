@@ -209,12 +209,6 @@ search_card = pn.Card(
     collapsed=False
 )
 
-static_map_card = pn.Card(
-    generate_static_map(),
-    title="Static World Map",
-    width=900
-)
-
 heatmap_card = pn.Card(
     correlation_heatmap(country_data),
     title="Correlation Heatmap",
