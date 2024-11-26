@@ -18,11 +18,13 @@ The platform is designed to handle large datasets, and it is capable of running 
 1. **Apache Hadoop:** Set up and configure Hadoop (HDFS) for distributed storage.
 3. **Apache Hive:** Install Hive for SQL-like querying of structured data.
 
+Here is the guide to the installations - [Hadoop and hive](https://medium.com/@daibinraju/installing-hadoop-with-hive-on-mac-m1-using-homebrew-3505c6166e83)
 
 ### ERD and Schema Design
 
 The Entity Relationship Diagram (ERD) and schema design for storing COVID-19 data in Hive can be found in the /docs folder. The main tables include:
 
+<img width="1103" alt="ERD" src="https://github.com/user-attachments/assets/2ba43d0a-25f0-4201-857b-877cbe60400f">
 
 ### Preprocessing Steps
 1. Handling Missing Values:
@@ -36,11 +38,12 @@ The Entity Relationship Diagram (ERD) and schema design for storing COVID-19 dat
     Any missing latitude or longitude values are set to 0.0.
 5. Country Mapping with Broadcast Variables:
     A broadcast variable is used to map Country_Region to country_id. This improves efficiency when working with large datasets.
+### Data ingestion
 
+### data types
+1. Csv files
+2. json data
 
 ## Authors
+[@RiddhiAthreya](https://github.com/RiddhiAthreya), [@emilyvngu](https://github.com/emilyvngu)
 
-Contributors names and contact info
-
-ex. Dominique Pizzie  
-ex. [@DomPizzie](https://twitter.com/dompizzie)
