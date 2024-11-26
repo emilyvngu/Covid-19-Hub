@@ -16,6 +16,10 @@ import base64
 import requests
 import json
 import param
+import folium
+from folium import Map, Marker
+from folium.plugins import MarkerCluster
+
 
 # Initialize panel and extensions
 hv.extension('bokeh')
@@ -211,22 +215,26 @@ def generate_static_map():
     img_html = f"<img src='data:image/png;base64,{base64_img}'/>"
     return pn.pane.HTML(img_html, width=800, height=500)
 
+def generate_interactive_map():
+    # Define the map center and zoom level
+    map_center = [0, 0]  # Center on the equator
+    world_map = Map(location=map_center, zoom_start=2, tiles='CartoDB positron')
 
-class Mapview(param.Parameterized):
-    opts = dict(width=1200, height=750, xaxis=None, yaxis=None, show_grid=False)
-    tiles = gv.tile_sources.CartoEco().apply.opts(**opts)
-    extents = param.Parameter(default=(-168, -60, 168, 83), precedence=-1)
-    tiles.extents = extents.default
-    box_polygons = gv.Polygons([]).opts(fill_alpha=0.1)
-    box_colours = ['red', 'blue', 'green', 'orange', 'purple']
-    box_stream = hv.streams.BoxEdit(source=box_polygons, num_objects=5, styles={'fill_color': box_colours})
-    template_df = pd.DataFrame({'x_meters': [], 'y_meters': []}, columns=['x_meters', 'y_meters'])
-    dfstream = hv.streams.Buffer(template_df, index=False, length=10000)
-    points = hv.DynamicMap(hv.Points, streams=[dfstream]).opts(
-        size=5, color='green', fill_alpha=0.3, line_alpha=0.4)
+    # Custom points
+    world_map_data = [
+        {'country': 'USA', 'lon': -95.7129, 'lat': 37.0902},
+        {'country': 'India', 'lon': 78.9629, 'lat': 20.5937},
+        {'country': 'Brazil', 'lon': -51.9253, 'lat': -14.2350},
+    ]
 
-    def show_map(self):
-        return self.tiles * self.box_polygons * self.points
+    # Add markers with a marker cluster for better scalability
+    marker_cluster = MarkerCluster().add_to(world_map)
+    for data in world_map_data:
+        Marker(location=[data['lat'], data['lon']],
+               popup=f"{data['country']}").add_to(marker_cluster)
+
+    # Convert the map to HTML
+    return pn.pane.HTML(world_map._repr_html_(), width=800, height=500)
 
 # Sidebar Cards
 search_card = pn.Card(
@@ -274,8 +282,9 @@ layout = pn.template.FastListTemplate(
                 pn.Row(
                 ),
                 pn.Row(
-                    world_map(world_map_data),  # Pass JSON data to the world_map function
-                    static_map_card
+                    #world_map(world_map_data),  # Pass JSON data to the world_map function
+                    static_map_card,
+                    generate_interactive_map()
                 )
             ))
         )
@@ -283,10 +292,4 @@ layout = pn.template.FastListTemplate(
     header_background='#343a40',
 ).servable()
 
-pn.serve(
-    {'COVID Dashboard': layout},
-    port=5006,
-    start=True,
-    show=True,
-    autoreload=True
-)
+layout.show()
