@@ -236,6 +236,39 @@ def generate_interactive_map():
     # Convert the map to HTML
     return pn.pane.HTML(world_map._repr_html_(), width=800, height=500)
 
+def generate_plotly_map():
+    # Custom points
+    world_map_data = [
+        {'country': 'USA', 'lon': -95.7129, 'lat': 37.0902},
+        {'country': 'India', 'lon': 78.9629, 'lat': 20.5937},
+        {'country': 'Brazil', 'lon': -51.9253, 'lat': -14.2350},
+    ]
+    df = pd.DataFrame(world_map_data)
+
+    # Create a scatter geo map
+    fig = px.scatter_geo(
+        df,
+        lat="lat",
+        lon="lon",
+        text="country",
+        title="Interactive World Map",
+        template="plotly_white"
+    )
+    fig.update_geos(
+        projection_type="natural earth",
+        showcoastlines=True,
+        coastlinecolor="black",
+        showland=True,
+        landcolor="lightgrey",
+        showocean=True,
+        oceancolor="lightblue"
+    )
+    fig.update_traces(marker=dict(size=10, color="red", symbol="circle"))
+
+    # Return as a Panel Plotly pane
+    return pn.pane.Plotly(fig, width=800, height=500)
+
+
 # Sidebar Cards
 search_card = pn.Card(
     pn.Column(country_selector),
@@ -284,7 +317,8 @@ layout = pn.template.FastListTemplate(
                 pn.Row(
                     #world_map(world_map_data),  # Pass JSON data to the world_map function
                     static_map_card,
-                    generate_interactive_map()
+                    generate_interactive_map(),
+                    generate_plotly_map()
                 )
             ))
         )
