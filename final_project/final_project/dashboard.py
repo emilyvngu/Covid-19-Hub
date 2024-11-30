@@ -54,7 +54,7 @@ country_selector = pn.widgets.Select(name='Select Country', options=df.columns.t
 search_bar = pn.widgets.TextInput(
     name="Search News",
     placeholder="Enter search term (e.g., COVID, Vaccine)...",
-    width=300
+    width=305
 )
 
 # Callback Functions:
