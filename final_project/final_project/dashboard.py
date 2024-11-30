@@ -252,6 +252,16 @@ news_container = pn.Column(scroll=True, height=400, width=400)
 # Initial news fetch
 #display_news()
 
+# Sidebar Cards:
+
+# Layout to select a specific country
+search_card = pn.Card(
+    pn.Column(country_selector),
+    title="Country Selector",
+    width=320,
+    collapsed=False
+)
+
 # Layout for the news section
 news_section = pn.Column(
     pn.pane.Markdown("## COVID-19 Related News"),
@@ -261,51 +271,33 @@ news_section = pn.Column(
     width=400
 )
 
-# Sidebar Cards
-search_card = pn.Card(
-    pn.Column(country_selector),
-    title="Country Selector",
-    width=320,
-    collapsed=False
-)
-
-heatmap_card = pn.Card(
-    correlation_heatmap(country_data),
-    title="Correlation Heatmap",
-    width=650
-)
-
-# Layout
+# Layout:
 layout = pn.template.FastListTemplate(
     title="COVID Insight Hub",
     sidebar=[
         other_global_stats(),  # Global stats card
         pn.Card(country_selector, title="Country Selector", width=300),
-        country_stats  # Country stats card
-        #chart_settings_card
+        country_stats,  # Country stats card
+        news_section
     ],
     main=[
         pn.Tabs(
-            ("COVID-19 Statistics Overview", pn.Column(
+            ("COVID-19 Statistics Overview", pn.Column( # Tab 1
                 pn.Row(
                     create_global_pie_chart,  # Global pie chart
-                    correlation_heatmap(country_data)
+                    correlation_heatmap(country_data) # Heatmap
                 ),
                 pn.Row(
                     create_country_pie_chart,  # Country-specific pie chart
-                    create_line_chart(),
+                    create_line_chart(), # Line chart
                 )
             )),
-            ("Case-Fatality Ratio Map", pn.Column(
+            ("Case-Fatality Ratio Map", pn.Column( # Tab 2
                 pn.Row(
-                    pn.Column(generate_case_fatality_map(), sizing_mode="stretch_width"),  # World map on the left
-                            create_ranking_box(world_map_df_sorted, height=441, width=210),
+                    pn.Column(generate_case_fatality_map(), sizing_mode="stretch_width"),  # World map
+                            create_ranking_box(world_map_df_sorted, height=441, width=210), # Ranking of ratio on right
                 )
-            )),
-            ("News",
-             pn.Row(
-                 news_section
-             ))
+            ))
         )
     ],
     header_background="#2c2c2c",  # Dark grey for header
