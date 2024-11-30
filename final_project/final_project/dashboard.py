@@ -1,5 +1,4 @@
 from statistics import correlation
-
 import pandas as pd
 import numpy as np
 import panel as pn
@@ -47,6 +46,11 @@ country_data = pd.DataFrame({
 country_selector = pn.widgets.Select(name='Select Country', options=df.columns.tolist(), width=280)
 options = {row['country']: f"{row['case_death_ratio']:.2%}" for _, row in world_map_df_sorted.iterrows()}
 select_widget = pn.widgets.Select(name="Top Countries", options=options, sizing_mode="stretch_width")
+search_bar = pn.widgets.TextInput(
+    name="Search News",
+    placeholder="Enter search term (e.g., COVID, Vaccine)...",
+    width=300
+)
 
 # Callback Functions
 
@@ -231,6 +235,23 @@ def create_ranking_box(data, height=400, width=220):
 
     return ranking_layout
 
+#search_bar.param.watch(display_news, "value")
+
+# Create a container for news articles
+news_container = pn.Column(scroll=True, height=400, width=400)
+
+# Initial news fetch
+#display_news()
+
+# Layout for the news section
+news_section = pn.Column(
+    pn.pane.Markdown("## COVID-19 Related News"),
+    search_bar,
+    news_container,
+    background="#f9f9f9",  # Light grey background for the section
+    width=400
+)
+
 # Sidebar Cards
 search_card = pn.Card(
     pn.Column(country_selector),
@@ -248,7 +269,6 @@ heatmap_card = pn.Card(
 # Layout
 layout = pn.template.FastListTemplate(
     title="COVID Insight Hub",
-    theme_toggle=True,  # Enable toggle for switching themes
     sidebar=[
         other_global_stats(),  # Global stats card
         pn.Card(country_selector, title="Country Selector", width=300),
@@ -272,10 +292,18 @@ layout = pn.template.FastListTemplate(
                     pn.Column(generate_case_fatality_map(), sizing_mode="stretch_width"),  # World map on the left
                             create_ranking_box(world_map_df_sorted, height=441, width=210),
                 )
-            ))
+            )),
+            ("News",
+             pn.Row(
+                 news_section
+             ))
         )
     ],
-    header_background='#343a40',
+    header_background="#2c2c2c",  # Dark grey for header
+    accent_base_color="#f5f5f5",  # White accents
+    header_color="#ffffff",  # White text for header
+    background="#1e1e1e",  # Blackish background
+    theme_toggle=True
 ).servable()
 
 layout.show()

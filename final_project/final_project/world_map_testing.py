@@ -113,3 +113,9 @@ layout = pn.template.FastListTemplate(
 ).servable()
 
 layout.show()
+
+
+""" News: (using API) find all news mentioning COVID-19 and its synonyms. 
+    You can filter news by topic, 
+    language, country, website and time period
+"""
