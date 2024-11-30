@@ -13,6 +13,8 @@ hv.extension('bokeh')
 pn.extension('plotly')
 gv.extension('bokeh')
 
+# Data:
+
 # global data
 global_data = {'total_cases':500, 'total_deaths':100, 'total_recovered':200, 'total_active':200}
 
@@ -41,20 +43,25 @@ country_data = pd.DataFrame({
     "Russia": [600, 90, 210, 190],
 }, index=["Total Cases", "Total Deaths", "Total Recovered", "Total Active"]).T
 
-# Widgets
-
-country_selector = pn.widgets.Select(name='Select Country', options=df.columns.tolist(), width=280)
+# Countries with its corresponding case_death_ratio - Needed for country_selector widget:
 options = {row['country']: f"{row['case_death_ratio']:.2%}" for _, row in world_map_df_sorted.iterrows()}
-select_widget = pn.widgets.Select(name="Top Countries", options=options, sizing_mode="stretch_width")
+
+# Widgets:
+
+# For selecting a specific country:
+country_selector = pn.widgets.Select(name='Select Country', options=df.columns.tolist(), width=280)
+# Search bar widget to search for news - NEWS API
 search_bar = pn.widgets.TextInput(
     name="Search News",
     placeholder="Enter search term (e.g., COVID, Vaccine)...",
     width=300
 )
 
-# Callback Functions
+# Callback Functions:
 
 def other_global_stats():
+    """ Function to display the global statistics
+    """
     stats_md = f"""
     ### Global Statistics
     - **Total Cases:** {global_data['total_cases']:,}
@@ -64,8 +71,12 @@ def other_global_stats():
     """
     return pn.pane.Markdown(stats_md, width=300, style={"padding": "10px", "font-size": "14px"})
 
+
 @pn.depends(country=country_selector.param.value)
 def country_stats(country):
+    """ Function to display a selected country's statistics:
+        The country is selected through the country_selector widget
+    """
     if not country:
         return pn.pane.Markdown("### Select a country to view its statistics.", width=300)
 
@@ -79,7 +90,10 @@ def country_stats(country):
     """
     return pn.pane.Markdown(stats_md, width=300, style={"padding": "10px", "font-size": "14px"})
 
+
 def create_global_pie_chart():
+    """ Generates the global pie chart using the global statistics
+    """
     global_df = pd.DataFrame({
         'Category': ['Total Cases', 'Total Deaths', 'Total Recovered', 'Total Active'],
         'Count': list(global_data.values())
@@ -99,8 +113,12 @@ def create_global_pie_chart():
     )
     return pn.pane.Plotly(fig)
 
+
 @pn.depends(country=country_selector.param.value)
 def create_country_pie_chart(country):
+    """ Generates the pie chart using selected country's statistics
+        Country is selected through country_selector widget
+    """
     if country not in country_total_case_data:
         return pn.pane.Markdown("### Select a valid country")
     country_data = country_total_case_data[country]
@@ -123,7 +141,10 @@ def create_country_pie_chart(country):
     )
     return pn.pane.Plotly(fig)
 
+
 def create_line_chart():
+    """ Generates line chart of total cases, deaths, and recovered over time
+    """
     time = pd.date_range(start='2020-01-01', periods=50, freq='M')
     cases = np.random.randint(100000, 1000000, 50)
     deaths = np.random.randint(1000, 10000, 50)
@@ -137,27 +158,12 @@ def create_line_chart():
     return pn.pane.Plotly(fig)
 
 
-def world_map(data_json):
-    data = pd.DataFrame(data_json)
-    points = gv.Points(data, ['lon', 'lat'], ['case_death_ratio', 'country'])
-    map_plot = points.opts(
-        opts.Points(
-            size=15,
-            tools=['hover'],
-            color='case_death_ratio',
-            cmap='YlOrBr',
-            width=800,
-            height=500
-        )
-    )
-    # Use CartoDark basemap
-    basemap = gvts.CartoDark
-    return basemap * map_plot
-
 def correlation_heatmap(data):
+    """ Generates heatmap to visualize the correlations among key
+        COVID-19 statistics: cases, deaths, recoveries, and active cases.
+    """
     correlation_matrix = data.corr()
 
-    # Create the Plotly heatmap
     fig = px.imshow(
         correlation_matrix,
         text_auto=".2f",
@@ -173,6 +179,11 @@ def correlation_heatmap(data):
     return pn.pane.Plotly(fig, config={"displayModeBar": False})
 
 def generate_case_fatality_map():
+    """ Generates interactive world map which has points of
+        countries using their longitude and latitude coordinates,
+        while using color to show the intensity of the corresponding country's
+        case_death_ratio
+    """
     fig = px.scatter_geo(
         world_map_df,
         lat="lat",
@@ -195,10 +206,8 @@ def generate_case_fatality_map():
     )
     return pn.pane.Plotly(fig, width=800, height=500)
 
-
 def create_ranking_box(data, height=400, width=220):
-    """
-    Creates a scrollable ranking box for the given data.
+    """ Generates a scrollable ranking box for the given data.
     """
     # Create styled ranking cards
     ranking_items = [
