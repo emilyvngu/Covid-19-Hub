@@ -55,12 +55,9 @@ recovered = np.random.randint(50000, 100000, 50)
 trends_df = pd.DataFrame({'Date': time, 'Cases': cases, 'Deaths': deaths, 'Recovered': recovered})
 
 #____________________________________________________________________________________
-country_heat_data = pd.DataFrame({
-    "USA": [900, 100, 200, 200],
-    "India": [800, 100, 200, 200],
-    "Brazil": [700, 80, 190, 200],
-    "Russia": [600, 90, 210, 190],
-}, index=["Total Cases", "Total Deaths", "Total Recovered", "Total Active"]).T
+# Heat map data (just re-formatting the country_totals dataframe)
+country_heat_data = pd.DataFrame(country_totals_json,
+                                 index=["total_cases", "total_deaths", "total_recovered", "total_active"]).T
 
 #____________________________________________________________________________________
 # Countries with its corresponding case_death_ratio - Needed for country_selector widget:
