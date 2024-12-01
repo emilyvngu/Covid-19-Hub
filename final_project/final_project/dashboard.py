@@ -56,13 +56,13 @@ trends_df = pd.DataFrame({'Date': time, 'Cases': cases, 'Deaths': deaths, 'Recov
 
 #____________________________________________________________________________________
 # Heat map data
-
+# KEEP THIS PART
 country_totals_data = {key:list(numbers.values()) for key, numbers in country_totals_json.items()}
 country_heat_data = pd.DataFrame(country_totals_data,
                                  index=["Total Cases", "Total Deaths", "Total Recovered", "Total Active"]).T
 #____________________________________________________________________________________
 # Countries with its corresponding case_death_ratio - Needed for country_selector widget:
-options = {row['country']: f"{row['case_death_ratio']:.2%}" for _, row in world_map_df.iterrows()}
+options = {row['country']: f"{row['case_death_ratio']:.2%}" for _, row in world_map_df_sorted.iterrows()}
 
 # Widgets:
 
@@ -306,7 +306,7 @@ layout = pn.template.FastListTemplate(
             ("Case-Fatality Ratio Map", pn.Column( # Tab 2
                 pn.Row(
                     pn.Column(generate_case_fatality_map(), sizing_mode="stretch_width"),  # World map
-                            create_ranking_box(world_map_df, height=441, width=210), # Ranking of ratio on right
+                            create_ranking_box(world_map_df_sorted, height=441, width=210), # Ranking of ratio on right
                 )
             ))
         )
