@@ -9157,6 +9157,7 @@ news = {
         "topic": None
     }
 }
+articles = news["articles"]
 
 #____________________________________________________________________________________
 # Widgets:
@@ -9268,7 +9269,6 @@ def correlation_heatmap(data):
         COVID-19 statistics: cases, deaths, recoveries, and active cases.
     """
     correlation_matrix = data.corr()
-    print(data)
 
     fig = px.imshow(
         correlation_matrix,
@@ -9350,22 +9350,25 @@ def create_ranking_box(data, height=400, width=220):
 
     return ranking_layout
 
-#search_bar.param.watch(display_news, "value")
+def create_article_list(articles_data):
+    # Create the title as a Markdown pane
+    title_pane = pn.pane.Markdown("COVID-19 News Articles",
+                                  style={"margin-bottom": "5px", "font-weight": "bold", "background-color": "lightblue",
+                                         "padding": "5px", "border-radius": "5px", "width": "260px", "text-align": "center"})
 
-# Create a container for news articles
-news_container = pn.Column(scroll=True, height=400, width=400)
+    # Generate the article list
+    article_items = []
+    for article in articles_data:
+        item = pn.pane.Markdown(
+            f"[{article['title']}]({article['link']})",
+            style={"font-size": "14px", "margin-bottom": "10px"}
+        )
+        article_items.append(item)
 
-# Initial news fetch
-#display_news()
-
+    # Combine the title and the article list in a scrollable column
+    scrollable_column = pn.Column(title_pane, *article_items, scroll=True, height=300, width=300)
+    return scrollable_column
 # Sidebar Cards:
-# Layout for the news section
-"""news_section = pn.Column(
-    pn.pane.Markdown("## COVID-19 Related News"),
-    news_container,
-    background="#f9f9f9",  # Light grey background for the section
-    width=400
-)"""
 
 # Layout:
 layout = pn.template.FastListTemplate(
@@ -9374,7 +9377,7 @@ layout = pn.template.FastListTemplate(
         other_global_stats(),  # Global stats card
         pn.Card(country_selector, title="Country Selector", width=300),
         country_stats,  # Country stats card
-        news_section
+        create_article_list(articles)
     ],
     main=[
         pn.Tabs(
