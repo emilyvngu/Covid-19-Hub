@@ -55,7 +55,7 @@ recovered = np.random.randint(50000, 100000, 50)
 trends_df = pd.DataFrame({'Date': time, 'Cases': cases, 'Deaths': deaths, 'Recovered': recovered})
 
 #____________________________________________________________________________________
-country_data = pd.DataFrame({
+country_heat_data = pd.DataFrame({
     "USA": [900, 100, 200, 200],
     "India": [800, 100, 200, 200],
     "Brazil": [700, 80, 190, 200],
@@ -297,7 +297,7 @@ layout = pn.template.FastListTemplate(
             ("COVID-19 Statistics Overview", pn.Column( # Tab 1
                 pn.Row(
                     create_global_pie_chart,  # Global pie chart
-                    correlation_heatmap(country_data) # Heatmap
+                    correlation_heatmap(country_heat_data) # Heatmap
                 ),
                 pn.Row(
                     create_country_pie_chart,  # Country-specific pie chart
