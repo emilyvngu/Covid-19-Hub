@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from constants import HIVE_METASTORE_URI
+from config import HIVE_METASTORE_URI
 def create_session():
     spark = SparkSession.builder.appName('Athena').getOrCreate()
     return spark
