@@ -23,9 +23,9 @@ global_json = {'total_cases':500, 'total_deaths':100, 'total_recovered':200, 'to
 # country-specific data
 # country_totals_json = get_total_cases_by_country()
 # (not needed) countries = ["USA", "India", "Brazil", "Russia", "France", "Japan"]
-country_totals_json = {'US':{'total_cases':900, 'total_deaths':100, 'total_recovered':200, 'total_active':200},
-            'India':{'total_cases':800, 'total_deaths':100, 'total_recovered':200, 'total_active':200},
-            'Italy':{'total_cases':700, 'total_deaths':100, 'total_recovered':200, 'total_active':200}}
+country_totals_json = {'US':{'total_cases':900, 'total_deaths':110, 'total_recovered':210, 'total_active':100},
+            'India':{'total_cases':800, 'total_deaths':120, 'total_recovered':260, 'total_active':200},
+            'Italy':{'total_cases':700, 'total_deaths':130, 'total_recovered':100, 'total_active':150}}
 country_totals_df = pd.DataFrame(country_totals_json)
 
 #____________________________________________________________________________________
@@ -55,10 +55,11 @@ recovered = np.random.randint(50000, 100000, 50)
 trends_df = pd.DataFrame({'Date': time, 'Cases': cases, 'Deaths': deaths, 'Recovered': recovered})
 
 #____________________________________________________________________________________
-# Heat map data (just re-formatting the country_totals dataframe)
-country_heat_data = pd.DataFrame(country_totals_json,
-                                 index=["total_cases", "total_deaths", "total_recovered", "total_active"]).T
+# Heat map data
 
+country_totals_data = {key:list(numbers.values()) for key, numbers in country_totals_json.items()}
+country_heat_data = pd.DataFrame(country_totals_data,
+                                 index=["Total Cases", "Total Deaths", "Total Recovered", "Total Active"]).T
 #____________________________________________________________________________________
 # Countries with its corresponding case_death_ratio - Needed for country_selector widget:
 options = {row['country']: f"{row['case_death_ratio']:.2%}" for _, row in world_map_df.iterrows()}
@@ -172,6 +173,7 @@ def correlation_heatmap(data):
         COVID-19 statistics: cases, deaths, recoveries, and active cases.
     """
     correlation_matrix = data.corr()
+    print(data)
 
     fig = px.imshow(
         correlation_matrix,
