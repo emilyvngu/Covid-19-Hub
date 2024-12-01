@@ -7,12 +7,60 @@ import holoviews as hv
 import geoviews as gv
 import geoviews.tile_sources as gvts
 from holoviews import opts
+#import main
+import requests
 
 # Initialize panel and extensions
 hv.extension('bokeh')
 pn.extension('plotly')
 gv.extension('bokeh')
 
+"""# Data:
+
+# Define the base URL
+BASE_URL = "http://localhost:9001"
+
+# Access total cases endpoint
+response = requests.get(f"{BASE_URL}/total_cases")
+if response.status_code == 200:
+    global_json = response.json()
+    #print("Total Cases:", global_json)
+else:
+    print("Failed to fetch total cases:", response.status_code)
+
+# Access total cases by country endpoint
+response = requests.get(f"{BASE_URL}/total_cases_by_country")
+if response.status_code == 200:
+    country_totals_json = response.json()
+    #print("Total Cases by Country:", country_totals_json)
+else:
+    print("Failed to fetch total cases by country:", response.status_code)
+
+# Access case fatality ratio endpoint
+response = requests.get(f"{BASE_URL}/case_fatality_ratio")
+if response.status_code == 200:
+    world_map_json = response.json()
+    #print("Case Fatality Ratio:", world_map_json)
+else:
+    print("Failed to fetch case fatality ratio:", response.status_code)
+
+# Access total cases over time endpoint
+response = requests.get(f"{BASE_URL}/total_cases_over_time")
+if response.status_code == 200:
+    trends_df = response.json()
+    #print("Total Cases Over Time:", trends_df)
+else:
+    print("Failed to fetch total cases over time:", response.status_code)
+
+# Access news endpoint
+response = requests.get(f"{BASE_URL}/news")
+if response.status_code == 200:
+    news_data = response.json()
+    #print("News:", news_data)
+else:
+    print("Failed to fetch news:", response.status_code)"""
+
+#________________________________________________________________________________________________________________________________________________________________________
 # Data:
 
 # global data
@@ -32,15 +80,15 @@ country_totals_df = pd.DataFrame(country_totals_json)
 # Data with each country's location and case-death ratio
 # world_map_json = get_case_fatality_ratio()
 world_map_json = [
-    {'country': 'USA', 'lon': -95.7129, 'lat': 37.0902, 'case_death_ratio': 0.05},
-    {'country': 'India', 'lon': 78.9629, 'lat': 20.5937, 'case_death_ratio': 0.03},
-    {'country': 'Brazil', 'lon': -51.9253, 'lat': -14.2350, 'case_death_ratio': 0.06},
-    {'country': 'Russia', 'lon': 105.3188, 'lat': 61.5240, 'case_death_ratio': 0.02},
-    {'country': 'France', 'lon': 2.2137, 'lat': 46.6034, 'case_death_ratio': 0.04},
-    {'country': 'Australia', 'lon': 133.7751, 'lat': -25.2744, 'case_death_ratio': 0.01}
+    {'country': 'USA', 'lon': -95.7129, 'lat': 37.0902, 'case_fatality_ratio': 0.05},
+    {'country': 'India', 'lon': 78.9629, 'lat': 20.5937, 'case_fatality_ratio': 0.03},
+    {'country': 'Brazil', 'lon': -51.9253, 'lat': -14.2350, 'case_fatality_ratio': 0.06},
+    {'country': 'Russia', 'lon': 105.3188, 'lat': 61.5240, 'case_fatality_ratio': 0.02},
+    {'country': 'France', 'lon': 2.2137, 'lat': 46.6034, 'case_fatality_ratio': 0.04},
+    {'country': 'Australia', 'lon': 133.7751, 'lat': -25.2744, 'case_fatality_ratio': 0.01}
 ]
 world_map_df = pd.DataFrame(world_map_json)
-world_map_df_sorted = world_map_df.sort_values(by='case_death_ratio', ascending=False)
+world_map_df_sorted = world_map_df.sort_values(by='case_fatality_ratio', ascending=False)
 
 #____________________________________________________________________________________
 # Data of total cases, deaths, and recovered over time:
@@ -190,19 +238,19 @@ def generate_case_fatality_map():
     """ Generates interactive world map which has points of
         countries using their longitude and latitude coordinates,
         while using color to show the intensity of the corresponding country's
-        case_death_ratio
+        case_fatality_ratio
     """
     fig = px.scatter_geo(
         world_map_df,
-        lat="lat",
-        lon="lon",
+        lat="latitude",
+        lon="longitude",
         #text="country",  # Display country name on hover
-        size="case_death_ratio",  # Size represents the case_death_ratio
-        color="case_death_ratio",  # Color intensity represents case_death_ratio
+        size="case_fatality_ratio",  # Size represents the case_fatality_ratio
+        color="case_fatality_ratio",  # Color intensity represents case_fatality_ratio
         color_continuous_scale="Reds",  # Red for alarming ratios
         title="World Map: Case Fatality Ratios",
         projection="natural earth",
-        labels={"case_death_ratio": "Case Fatality Ratio"},
+        labels={"case_fatality_ratio": "Case Fatality Ratio"},
         template="plotly_white"
     )
     fig.update_traces(marker=dict(sizemode='area', sizeref=0.01, line=dict(width=0.5, color="black")))
@@ -224,7 +272,7 @@ def create_ranking_box(data, height=400, width=220):
             <div style="padding: 10px; text-align: center; border: 1px solid #ccc; 
             background-color: #f0f0f0; border-radius: 5px;">
                 <b>{row['country']}</b><br>
-                Fatality Rate: {row['case_death_ratio']:.2%}
+                Fatality Rate: {row['case_fatality_ratio']:.2%}
             </div>
             """,
             width=200
