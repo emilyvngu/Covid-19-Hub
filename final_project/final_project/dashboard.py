@@ -1,18 +1,11 @@
-from statistics import correlation
 import pandas as pd
-import numpy as np
 import panel as pn
 import plotly.express as px
 import holoviews as hv
 import geoviews as gv
-import geoviews.tile_sources as gvts
-from holoviews import opts
-import requests
 
 # Initialize panel and extensions
-hv.extension('bokeh')
 pn.extension('plotly')
-gv.extension('bokeh')
 
 """# Data:
 
@@ -9164,12 +9157,6 @@ articles = news["articles"]
 
 # For selecting a specific country:
 country_selector = pn.widgets.Select(name='Select Country', options=country_totals_df.columns.tolist(), width=280)
-# Search bar widget to search for news - NEWS API
-search_bar = pn.widgets.TextInput(
-    name="Search News",
-    placeholder="Enter search term (e.g., COVID, Vaccine)...",
-    width=305
-)
 
 # Callback Functions:
 
