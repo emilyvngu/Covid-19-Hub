@@ -52,7 +52,7 @@ if response.status_code == 200:
 else:
     print("Failed to fetch news:", response.status_code)"""
 
-#________________________________________________________________________________________________________________________________________________________________________
+#________________________________________________________________________________________________________
 # Data:
 
 # global data
@@ -9203,7 +9203,7 @@ def create_global_pie_chart():
     """
 
     # Filter out 'Total Recovered' if it exists in global_json
-    filtered_data = {k: v for k, v in global_json.items() if k != 'total_recovered'}
+    filtered_data = {k: v for k, v in global_json.items() if k != 'total_cases'}
 
     # Create the DataFrame for the pie chart
     global_df = pd.DataFrame({
@@ -9236,7 +9236,7 @@ def create_country_pie_chart(country):
     country_data = country_totals_df[country]
 
     # Filter out the 'total_recovered' row
-    filtered_data = country_data[country_data.index != 'total_recovered']
+    filtered_data = country_data[country_data.index != 'total_cases']
 
     # Create the DataFrame for the pie chart
     country_df = pd.DataFrame({
@@ -9300,7 +9300,7 @@ def generate_case_fatality_map():
         world_map_df,
         lat="latitude",
         lon="longitude",
-        #text="country",  # Display country name on hover
+        hover_name="country",  # Display country name on hover
         size="case_fatality_ratio",  # Size represents the case_fatality_ratio
         color="case_fatality_ratio",  # Color intensity represents case_fatality_ratio
         color_continuous_scale="Reds",  # Red for alarming ratios
@@ -9407,7 +9407,7 @@ layout = pn.template.FastListTemplate(
     header_background="#2c2c2c",  # Dark grey for header
     accent_base_color="#f5f5f5",  # White accents
     header_color="#ffffff",  # White text for header
-    theme_toggle=True
+    #theme_toggle=True
 ).servable()
 
-layout.show()
+#layout.show()
