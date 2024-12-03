@@ -62,6 +62,11 @@ The Entity Relationship Diagram (ERD) and schema design for storing COVID-19 dat
 1. Csv files
 2. json data
 
+### Serving the dashboard
+1. Go to your terminal
+2. run: 'panel serve .../dashboard.py' 
+       (The '.../dashboard.py' should be the filepath to the dashboard file)
+
 ## Authors
 [@RiddhiAthreya](https://github.com/RiddhiAthreya), [@emilyvngu](https://github.com/emilyvngu)
 
