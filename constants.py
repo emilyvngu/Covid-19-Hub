@@ -186,7 +186,7 @@ COUNTRIES = {
     "Ukraine": {"latitude": 48.3794, "longitude": 31.1656},
     "United Arab Emirates": {"latitude": 23.4241, "longitude": 53.8478},
     "United Kingdom": {"latitude": 55.3781, "longitude": -3.4360},
-    "United States": {"latitude": 37.0902, "longitude": -95.7129},
+    "US": {"latitude": 37.0902, "longitude": -95.7129},
     "Uruguay": {"latitude": -32.5228, "longitude": -55.7658},
     "Uzbekistan": {"latitude": 41.3775, "longitude": 64.5853},
     "Vanuatu": {"latitude": -15.3767, "longitude": 166.9592},
