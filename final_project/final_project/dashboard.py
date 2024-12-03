@@ -58,10 +58,11 @@ else:
 # global data
 global_json = {
     "total_active": 10827664802,
-    "total_cases": 316909123239,
+    "total_cases": 690912323, #good
     "total_deaths": 4419160076,
     "total_recovered": 23564583050
 }
+global_json['total_recovered'] = global_json['total_cases'] - global_json['total_active'] - global_json['total_deaths']
 # country_json = get_total_cases()
 
 #____________________________________________________________________________________
@@ -1211,7 +1212,13 @@ country_totals_json = {
         "total_recovered": 8779035
     }
 }
-country_totals_df = pd.DataFrame(country_totals_json)
+country_totals_df = (pd.DataFrame(country_totals_json)/1000).round().astype(int)
+country_totals_df.loc['total_recovered'] = (
+    country_totals_df.loc['total_cases']
+    - country_totals_df.loc['total_active']
+    - country_totals_df.loc['total_deaths']
+)
+print(country_totals_df.head())
 
 #____________________________________________________________________________________
 # Data with each country's location and case-death ratio
@@ -9309,7 +9316,7 @@ def create_ranking_box(data, height=400, width=220):
             <div style="padding: 10px; text-align: center; border: 1px solid #ccc; 
             background-color: #f0f0f0; border-radius: 5px;">
                 <b>{row['country']}</b><br>
-                Fatality Rate: {row['case_fatality_ratio']}
+                Fatality Rate: {round(row['case_fatality_ratio'], 2)}%
             </div>
             """,
             width=200
@@ -9355,7 +9362,6 @@ def create_article_list(articles_data):
     # Combine the title and the article list in a scrollable column
     scrollable_column = pn.Column(title_pane, *article_items, scroll=True, height=300, width=300)
     return scrollable_column
-# Sidebar Cards:
 
 # Layout:
 layout = pn.template.FastListTemplate(
