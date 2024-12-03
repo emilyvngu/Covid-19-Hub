@@ -9232,13 +9232,16 @@ def create_country_pie_chart(country):
     """ Generates the pie chart using selected country's statistics
         Country is selected through country_selector widget
     """
-    country_data = country_totals_json[country]
-    filtered_data = {k: v for k, v in country_data.items() if k != 'total_recovered'}
+
+    country_data = country_totals_df[country]
+
+    # Filter out the 'total_recovered' row
+    filtered_data = country_data[country_data.index != 'total_recovered']
 
     # Create the DataFrame for the pie chart
     country_df = pd.DataFrame({
-        'Category': list(filtered_data.keys()),
-        'Count': list(filtered_data.values())
+        'Category': filtered_data.index,
+        'Count': filtered_data.values
     })
 
     fig = px.pie(
