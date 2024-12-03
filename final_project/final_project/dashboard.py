@@ -9176,7 +9176,7 @@ def other_global_stats():
     - **Total Recovered:** {global_json['total_recovered']:,}
     - **Total Active:** {global_json['total_active']:,}
     """
-    return pn.pane.Markdown(stats_md, width=300, style={"padding": "10px", "font-size": "14px"})
+    return pn.pane.Markdown(stats_md, width=300, styles={"padding": "10px", "font-size": "14px"})
 
 
 @pn.depends(country=country_selector.param.value)
@@ -9195,7 +9195,7 @@ def country_stats(country):
     - **Total Recovered:** {country_data['total_recovered']:,}
     - **Total Active:** {country_data['total_active']:,}
     """
-    return pn.pane.Markdown(stats_md, width=300, style={"padding": "10px", "font-size": "14px"})
+    return pn.pane.Markdown(stats_md, width=300, styles={"padding": "10px", "font-size": "14px"})
 
 
 def create_global_pie_chart():
@@ -9342,14 +9342,14 @@ def create_ranking_box(data, height=400, width=220):
         scroll=True,  # Enable scrolling
         height=height,  # Set height for the scrollable box
         width=width,  # Width of the box
-        background="#58a3c6"  # Blue-green background matching your mockup
+        styles = {'background': "#58a3c6"}  # Blue-green background matching your mockup
     )
 
     # Add a title to the ranking box
     ranking_layout = pn.Column(
         pn.pane.Markdown("<h3 style='text-align: center; color: white;'>Ranking</h3>", width=width),
         ranking_box,
-        background="#58a3c6",  # Background for the entire ranking column
+        styles = {'background': "#58a3c6"}, # Background for the entire ranking column
         margin=0,
         align="center"
     )
@@ -9359,7 +9359,7 @@ def create_ranking_box(data, height=400, width=220):
 def create_article_list(articles_data):
     # Create the title as a Markdown pane
     title_pane = pn.pane.Markdown("COVID-19 News Articles",
-                                  style={"margin-bottom": "5px", "font-weight": "bold", "background-color": "lightblue",
+                                  styles={"margin-bottom": "5px", "font-weight": "bold", "background-color": "lightblue",
                                          "padding": "5px", "border-radius": "5px", "width": "260px", "text-align": "center"})
 
     # Generate the article list
@@ -9367,7 +9367,7 @@ def create_article_list(articles_data):
     for article in articles_data:
         item = pn.pane.Markdown(
             f"[{article['title']}]({article['link']})",
-            style={"font-size": "14px", "margin-bottom": "10px"}
+            styles={"font-size": "14px", "margin-bottom": "10px"}
         )
         article_items.append(item)
 
@@ -9407,7 +9407,6 @@ layout = pn.template.FastListTemplate(
     header_background="#2c2c2c",  # Dark grey for header
     accent_base_color="#f5f5f5",  # White accents
     header_color="#ffffff",  # White text for header
-    background="#1e1e1e",  # Blackish background
     theme_toggle=True
 ).servable()
 
