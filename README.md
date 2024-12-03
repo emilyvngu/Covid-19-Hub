@@ -73,7 +73,7 @@ The Entity Relationship Diagram (ERD) and schema design for storing COVID-19 dat
    ```
    panel serve /path/to/your/dashboard.py
    ```
-   View your dashboard in the browser: By default, the dashboard will be served at http://localhost:5006/dashboard.
+ 3. View your dashboard in the browser.
 
 ## Authors
 [@RiddhiAthreya](https://github.com/RiddhiAthreya), [@emilyvngu](https://github.com/emilyvngu)
