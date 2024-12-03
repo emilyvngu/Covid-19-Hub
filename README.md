@@ -64,8 +64,16 @@ The Entity Relationship Diagram (ERD) and schema design for storing COVID-19 dat
 
 ### Serving the dashboard
 1. Go to your terminal
-2. run: 'panel serve .../dashboard.py' 
-       (The '.../dashboard.py' should be the filepath to the dashboard file)
+2. Run the following command:
+   ```
+   panel serve <path_to_dashboard.py>
+   ```
+   Replace <path_to_dashboard.py> with the full filepath to your dashboard script.
+   Example:
+   ```
+   panel serve /path/to/your/dashboard.py
+   ```
+   View your dashboard in the browser: By default, the dashboard will be served at http://localhost:5006/dashboard.
 
 ## Authors
 [@RiddhiAthreya](https://github.com/RiddhiAthreya), [@emilyvngu](https://github.com/emilyvngu)
