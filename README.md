@@ -76,5 +76,5 @@ The Entity Relationship Diagram (ERD) and schema design for storing COVID-19 dat
  3. View your dashboard in the browser.
 
 ## Authors
-[@RiddhiAthreya](https://github.com/RiddhiAthreya), [@emilyvngu](https://github.com/emilyvngu)
+[@RiddhiAthreya](https://github.com/RiddhiAthreya) [@emilyvngu](https://github.com/emilyvngu)
 
