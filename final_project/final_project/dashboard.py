@@ -57,10 +57,10 @@ else:
 
 # global data
 global_json = {
-    "total_active": 10827664802,
-    "total_cases": 690912323, #good
-    "total_deaths": 4419160076,
-    "total_recovered": 23564583050
+    "total_active": 10796564,
+    "total_cases": 613114498, #good
+    "total_deaths": 6530942,
+    "total_recovered": 0
 }
 global_json['total_recovered'] = global_json['total_cases'] - global_json['total_active'] - global_json['total_deaths']
 # country_json = get_total_cases()
@@ -1218,7 +1218,6 @@ country_totals_df.loc['total_recovered'] = (
     - country_totals_df.loc['total_active']
     - country_totals_df.loc['total_deaths']
 )
-print(country_totals_df.head())
 
 #____________________________________________________________________________________
 # Data with each country's location and case-death ratio
@@ -9202,10 +9201,16 @@ def country_stats(country):
 def create_global_pie_chart():
     """ Generates the global pie chart using the global statistics
     """
+
+    # Filter out 'Total Recovered' if it exists in global_json
+    filtered_data = {k: v for k, v in global_json.items() if k != 'total_recovered'}
+
+    # Create the DataFrame for the pie chart
     global_df = pd.DataFrame({
-        'Category': ['Total Active', 'Total Cases', 'Total Deaths', 'Total Recovered'],
-        'Count': list(global_json.values())
+        'Category': list(filtered_data.keys()),
+        'Count': list(filtered_data.values())
     })
+
     fig = px.pie(
         global_df,
         names='Category',
@@ -9228,10 +9233,14 @@ def create_country_pie_chart(country):
         Country is selected through country_selector widget
     """
     country_data = country_totals_json[country]
+    filtered_data = {k: v for k, v in country_data.items() if k != 'total_recovered'}
+
+    # Create the DataFrame for the pie chart
     country_df = pd.DataFrame({
-        'Category': ['Total Active', 'Total Cases', 'Total Deaths', 'Total Recovered'],
-        'Count': list(country_data.values())
+        'Category': list(filtered_data.keys()),
+        'Count': list(filtered_data.values())
     })
+
     fig = px.pie(
         country_df,
         names='Category',
