@@ -1,23 +1,18 @@
 import pandas as pd
 import panel as pn
 import plotly.express as px
-import holoviews as hv
-import geoviews as gv
 import requests
+from config import BASE_URL
 
 # Initialize panel and extensions
 pn.extension('plotly')
 
 # Data:
 
-# Define the base URL
-BASE_URL = "http://localhost:9001"
-
 # Access total cases endpoint
 response = requests.get(f"{BASE_URL}/total_cases")
 if response.status_code == 200:
-    country_json = response.json()
-    #print("Total Cases:", country_json)
+    global_json = response.json()
 else:
     print("Failed to fetch total cases:", response.status_code)
 
@@ -25,7 +20,6 @@ else:
 response = requests.get(f"{BASE_URL}/total_cases_by_country")
 if response.status_code == 200:
     country_totals_json = response.json()
-    #print("Total Cases by Country:", country_totals_json)
 else:
     print("Failed to fetch total cases by country:", response.status_code)
 
@@ -33,15 +27,13 @@ else:
 response = requests.get(f"{BASE_URL}/case_fatality_ratio")
 if response.status_code == 200:
     world_map_json = response.json()
-    #print("Case Fatality Ratio:", world_map_json)
 else:
     print("Failed to fetch case fatality ratio:", response.status_code)
 
 # Access total cases over time endpoint
 response = requests.get(f"{BASE_URL}/total_cases_over_time")
 if response.status_code == 200:
-    trends_df = response.json()
-    #print("Total Cases Over Time:", trends_df)
+    trends_json = response.json()
 else:
     print("Failed to fetch total cases over time:", response.status_code)
 
@@ -49,23 +41,18 @@ else:
 response = requests.get(f"{BASE_URL}/news")
 if response.status_code == 200:
     news_data = response.json()
-    #print("News:", news_data)
 else:
     print("Failed to fetch news:", response.status_code)
 
-#________________________________________________________________________________________________________
+#____________________________________________________________________________________
 # Data:
 
 # global data
-# global_json = get_total_cases()
-global_json = {}
 global_json['total_recovered'] = global_json['total_cases'] - global_json['total_active'] - global_json['total_deaths']
 
 #____________________________________________________________________________________
 # country-specific data
-# country_totals_json = get_total_cases_by_country()
-country_totals_json = {}
-country_totals_df = (pd.DataFrame(country_totals_json)/1000).round().astype(int)
+country_totals_df = pd.DataFrame(country_totals_json)
 country_totals_df.loc['total_recovered'] = (
     country_totals_df.loc['total_cases']
     - country_totals_df.loc['total_active']
@@ -75,7 +62,6 @@ country_totals_df.loc['total_recovered'] = (
 #____________________________________________________________________________________
 # Data with each country's location and case-death ratio
 # world_map_json = get_case_fatality_ratio()
-world_map_json = []
 world_map_df = pd.DataFrame(world_map_json)
 world_map_df_sorted = world_map_df.sort_values(by='case_fatality_ratio', ascending=False)
 
@@ -83,7 +69,7 @@ world_map_df_sorted = world_map_df.sort_values(by='case_fatality_ratio', ascendi
 # Data of total cases, deaths, and recovered over time:
 # trend_json = get_total_cases_over_time()
 # trends_df = pd.DataFrame(trend_json)
-trends_df = pd.DataFrame({})
+trends_df = pd.DataFrame(trends_json)
 
 #____________________________________________________________________________________
 # Heat map data
@@ -91,8 +77,7 @@ country_totals_data = {key:list(numbers.values()) for key, numbers in country_to
 country_heat_data = pd.DataFrame(country_totals_data,
                                  index=["Total Cases", "Total Deaths", "Total Recovered", "Total Active"]).T
 #____________________________________________________________________________________
-news = {}
-articles = news["articles"]
+articles = news_data["articles"]
 
 #____________________________________________________________________________________
 # Widgets:
@@ -345,5 +330,3 @@ layout = pn.template.FastListTemplate(
     header_color="#ffffff",  # White text for header
     #theme_toggle=True
 ).servable()
-
-#layout.show()
