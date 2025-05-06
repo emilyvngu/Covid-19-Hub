@@ -14,12 +14,30 @@ The platform is designed to handle large datasets, and it is capable of running 
 
 ## Setup Instructions
 
-### Prerequisites
-1. **Apache Hadoop:** Set up and configure Hadoop (HDFS) for distributed storage.
-3. **Apache Hive:** Install Hive for SQL-like querying of structured data.
-
-Here is the guide to the installations - [Hadoop and hive](https://medium.com/@daibinraju/installing-hadoop-with-hive-on-mac-m1-using-homebrew-3505c6166e83)
-
+1. Install Hadoop and Hive
+    Here is the guide to the installations - [Hadoop and hive](https://medium.com/@daibinraju/installing-hadoop-with-hive-on-mac-m1-using-homebrew-3505c6166e83)
+2. Create a python virtual environment
+   ```
+   python3 -m venv <myenvpath>
+   ```
+4. Activate the virtual environment
+    ```
+   source venv/bin/activate
+    ```
+6. Install all the required dependecies
+    ```
+    pip install -r requirements.txt.
+   ```
+8. Create a file called `.env_dev` and include the following variables with their respective values
+    ```
+    HADOOP_FILE_PATH=<YOUR PATH> 
+    HIVE_METASTORE_URI=<YOUR PATH>
+    ```
+9. Run the flask server
+   Navigate to the folder where `run.py` exists
+   ```
+   python3 run.py
+   ```
 ### ERD and Schema Design
 
 The Entity Relationship Diagram (ERD) and schema design for storing COVID-19 data in Hive can be found in the /docs folder. The main tables include:
@@ -44,6 +62,19 @@ The Entity Relationship Diagram (ERD) and schema design for storing COVID-19 dat
 1. Csv files
 2. json data
 
+### Serving the dashboard
+1. Go to your terminal
+2. Run the following command:
+   ```
+   panel serve <path_to_dashboard.py>
+   ```
+   Replace <path_to_dashboard.py> with the full filepath to your dashboard script.
+   Example:
+   ```
+   panel serve /path/to/your/dashboard.py
+   ```
+ 3. View your dashboard in the browser.
+
 ## Authors
-[@RiddhiAthreya](https://github.com/RiddhiAthreya)
+[@RiddhiAthreya](https://github.com/RiddhiAthreya) [@emilyvngu](https://github.com/emilyvngu)
 
